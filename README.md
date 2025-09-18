@@ -1,39 +1,34 @@
+# AmritKaurOS v5 🌸 (Private — Local-first Full Prototype)
 
-# AmritKaurOS v4 🌸 (Private Prototype)
+This v5 package is an advanced, privacy-first local prototype for AmritKaurOS.
+It is intended to be kept private and run locally or on a private repo only.
 
-This v4 package is a privacy-first, local-first prototype for AmritKaurOS.
-It includes:
-- Punjabi-only AI-sim console (client-side, rule-based)
-- Naam Tree canvas visualization (animated)
-- Healing audio (placeholder in assets/healing.mp3)
-- Local memory (localStorage) with import/export
+## Features (v5)
+- Punjabi-only conversational seed (client-side, rule-based)
+- Code Companion: run JS snippets locally (sandboxed)
+- Encrypted Export/Import (AES-GCM via Web Crypto) for memory backups
+- Naam Tree visualization + Healing audio (local)
+- TTS sample for local voice output
+- LocalStorage-based memory (no external calls)
 
-## Important (security & privacy)
-- Keep this repository **private** on GitHub (Settings → Change visibility → Private).
-- This build does **not** call any external APIs. All logic runs in the browser.
-- Exported memory can be encrypted before storing. Use the included export feature to backup memory.
-
-## Quick install (replace existing repository contents)
+## Quick install (replace repository contents)
 1. Download and unzip this package.
-2. In your local clone of your repo (e.g., https://github.com/gurpreetsingh5523-source/Amrit-Kaur-Os):
+2. In your local clone of your repo (private):
 ```bash
-# backup current remote if needed:
-git clone https://github.com/gurpreetsingh5523-source/Amrit-Kaur-Os.git Amrit_backup
-
-# replace files in your repo root with contents of this package
-unzip /path/to/AmritKaurOS_v4.zip -d /path/to/Amrit-Kaur-Os/
-
+unzip /path/to/AmritKaurOS_v5.zip -d /path/to/Amrit-Kaur-Os/
 cd /path/to/Amrit-Kaur-Os/
 git add .
-git commit -m "Add AmritKaurOS v4 (private prototype)"
+git commit -m "Add AmritKaurOS v5 (private prototype)"
 git push origin main
 ```
-3. On GitHub: ensure repo visibility is **Private**.
-4. Open `index.html` via GitHub Pages (if enabled) or open locally: `file:///.../index.html`
+3. Keep the repo **Private**. Do not enable public GitHub Pages for privacy-sensitive data.
 
-## Notes & next steps
-- v5 will include optional server-backed AI for richer, contextual Punjabi conversation and voice features. Keep v4 private while we prepare v5.
-- Replace `assets/healing.mp3` with a real audio file for better healing demo.
-- If you'd like, I can prepare `v5.zip` next and guide a safe private deployment plan.
+## Security notes
+- v5 uses Web Crypto for encrypted export/import; choose a strong password and store it safely.
+- All logic is client-side; no external APIs are called in this package.
+- Replace placeholder audio with real healing audio if desired (assets/healing.mp3).
 
-**Repository owner recommendation:** keep this project private: https://github.com/gurpreetsingh5523-source/Amrit-Kaur-Os
+## Next steps (v6 ideas)
+- Optional private server backend to enable richer Punjabi AI (hosted on a private machine you control)
+- Secure voice mirror with offline models
+- Naam-tech protocol integration

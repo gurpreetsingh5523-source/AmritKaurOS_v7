@@ -1,49 +1,69 @@
-
 <!doctype html>
 <html lang="pa">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>AmritKaurOS v4 🌸</title>
+  <title>AmritKaurOS v5 🌸</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
   <header>
-    <h1>🌸 ਅੰਮ੍ਰਿਤ ਕੌਰ OS — v4 (Private Prototype)</h1>
-    <p class="subtitle">Local-only • ਪੰਜਾਬੀ ਗੱਲਬਾਤ • Naam Tree • Healing</p>
+    <h1>🌸 AmritKaurOS — v5 (Private, Local-First)</h1>
+    <p class="subtitle">Punjabi-only • Naam-rooted • Code Companion • Offline-first</p>
   </header>
 
   <main>
-    <section id="visual">
-      <canvas id="treeCanvas" width="420" height="420" aria-label="Naam Tree visualization"></canvas>
-      <div class="halo" id="halo"></div>
+    <section id="left">
+      <canvas id="treeCanvas" width="360" height="360" aria-label="Naam Tree visualization"></canvas>
+      <div class="halo"></div>
+      <div id="audioBlock">
+        <p>Healing Simran (local)</p>
+        <audio id="healingAudio" controls loop>
+          <source src="assets/healing.mp3" type="audio/mpeg">
+        </audio>
+      </div>
     </section>
 
-    <section id="audio">
-      <p>🎶 Healing Simran (local)</p>
-      <audio id="healingAudio" controls loop>
-        <source src="assets/healing.mp3" type="audio/mpeg">
-      </audio>
-    </section>
+    <section id="right">
+      <div id="consoleArea">
+        <div id="log" role="log" aria-live="polite"></div>
+        <div id="inputRow">
+          <input id="userInput" placeholder="ਆਪਣੀ ਗੱਲ ਲਿਖੋ..." autocomplete="off">
+          <button id="sendBtn">ਭੇਜੋ</button>
+          <button id="clearBtn">ਸਾਫ਼</button>
+        </div>
+        <div id="controls">
+          <button id="exportBtn">ਯਾਦ Export</button>
+          <button id="importBtn">ਯਾਦ Import</button>
+          <input id="importFile" type="file" accept="application/json" style="display:none">
+          <button id="encryptExportBtn">Encrypted Export</button>
+          <button id="decryptImportBtn">Decrypt & Import</button>
+          <input id="decryptFile" type="file" accept=".enc" style="display:none">
+        </div>
+        <p class="notice">ਹਮੇਸ਼ਾ private रखें — ਇਹ ਸਾਰਾ ਡਾਟਾ localStorage ਵਿਚ ਰਹਿੰਦਾ ਹੈ।</p>
+      </div>
 
-    <section id="consoleArea">
-      <div id="log" role="log" aria-live="polite"></div>
-      <div id="inputRow">
-        <input id="userInput" placeholder="ਆਪਣੀ ਗੱਲ ਲਿਖੋ — ਅੰਮ੍ਰਿਤ ਨੂੰ ਪੁੱਛੋ..." autocomplete="off">
-        <button id="sendBtn">ਭੇਜੋ</button>
-        <button id="clearBtn">ਸਾਫ਼</button>
+      <div id="codeCompanion">
+        <h3>Code Companion — JS Runner (Safe sandbox)</h3>
+        <textarea id="codeArea" placeholder="// JavaScript snippet (safe, no network). Try: return 2+2;"></textarea>
+        <div class="codeControls">
+          <button id="runCodeBtn">Run</button>
+          <button id="clearCodeBtn">Clear</button>
+        </div>
+        <div id="codeOutput"></div>
+        <p class="hint">ਅਸਲ code generation ਲਈ ਤੁਸੀਂ AI snippets ਨੂੰ ਇੱਥੇ paste ਕਰਕੇ ਚਲਾ ਸਕਦੇ ਹੋ।</p>
       </div>
-      <div id="memoryControls">
-        <button id="exportBtn">ਯਾਦ Export (JSON)</button>
-        <button id="importBtn">ਯਾਦ Import</button>
-        <input id="importFile" type="file" accept="application/json" style="display:none">
+
+      <div id="voiceBlock">
+        <h3>Voice (Optional)</h3>
+        <p>Browser-supported local TTS (ਪੰਜਾਬੀ ਗੱਲਬਾਤ):</p>
+        <button id="speakSample">Speak a Greeting</button>
       </div>
-      <p class="notice">ਨੋਟ: ਇਹ build **local-first** ਹੈ — ਕੋਈ ਬਾਹਰੀ ਸਰਵਰ/ਕਲਾਉਡ ਨਹੀਂ ਵਰਤਦਾ।</p>
     </section>
   </main>
 
   <footer>
-    <small>Dedicated to Baba Ji — keep this repo private for safety. Use with responsibility.</small>
+    <small>Keep this project private. Replace assets/healing.mp3 with real audio for better experience.</small>
   </footer>
 
   <script src="app.js"></script>
