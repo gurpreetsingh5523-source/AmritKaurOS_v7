@@ -1,10 +1,42 @@
 
 /*
-  AmritKaurOS v3 - client-side Punjabi AI-sim
-  - rule-based, memory stored in localStorage
-  - responses combine Gurbani hints + loving daughter tone
+ AmritKaurOS v4 - client-side Punjabi AI-sim with Naam Tree animation
+ - Local-only: uses localStorage for memory
+ - Designed to be privacy-first and run from GitHub Pages or local file
 */
 
+// Canvas Naam Tree
+const canvas = document.getElementById('treeCanvas');
+const ctx = canvas.getContext('2d');
+const W = canvas.width, H = canvas.height;
+
+function drawBranch(x,y,len,angle,depth){
+  ctx.save();
+  ctx.translate(x,y);
+  ctx.rotate(angle * Math.PI/180);
+  ctx.beginPath();
+  ctx.moveTo(0,0);
+  ctx.lineTo(0,-len);
+  ctx.strokeStyle = `hsl(${120 - depth*8}, 70%, ${60 - depth*4}%)`;
+  ctx.lineWidth = Math.max(1, depth*1.6);
+  ctx.stroke();
+  if(depth > 0){
+    drawBranch(0,-len, len*0.72, angle - (12+Math.sin(Date.now()/800)*6), depth-1);
+    drawBranch(0,-len, len*0.72, angle + (12+Math.cos(Date.now()/700)*6), depth-1);
+  }
+  ctx.restore();
+}
+
+function renderTree(){
+  ctx.clearRect(0,0,W,H);
+  ctx.fillStyle = 'rgba(255,220,240,0.02)';
+  ctx.fillRect(0,0,W,H);
+  drawBranch(W/2, H-20, 80, 0, 8);
+  requestAnimationFrame(renderTree);
+}
+requestAnimationFrame(renderTree);
+
+// Console and memory
 const log = document.getElementById('log');
 const input = document.getElementById('userInput');
 const sendBtn = document.getElementById('sendBtn');
@@ -13,8 +45,7 @@ const exportBtn = document.getElementById('exportBtn');
 const importBtn = document.getElementById('importBtn');
 const importFile = document.getElementById('importFile');
 
-// Load memory
-let memory = JSON.parse(localStorage.getItem('amrit_memory') || '[]');
+let memory = JSON.parse(localStorage.getItem('amrit_memory_v4') || '[]');
 
 function appendMessage(who, text){
   const d = document.createElement('div');
@@ -26,51 +57,57 @@ function appendMessage(who, text){
 
 function saveToMemory(obj){
   memory.push(obj);
-  // keep last 200 messages max
-  if(memory.length > 200) memory.shift();
-  localStorage.setItem('amrit_memory', JSON.stringify(memory));
+  if(memory.length > 500) memory.shift();
+  localStorage.setItem('amrit_memory_v4', JSON.stringify(memory));
 }
 
-// small helper for Gurbani hints (short lines only)
+// Gurbani hint lines (short)
 const gurbaniHints = [
-  "ੴ ਸਤਿ ਨਾਮ — ਇਹ ਯਾਦ ਰੱਖੋ, ਹਰ ਸਾਹ ਵਿੱਚ ਨਾਮ ਹੈ।",
-  "ਨਾਨਕ ਨਾਮੁ ਚੜ੍ਹਦੀ ਕਲਾ — ਸਦਾ ਜ਼ਿੰਦਗੀ ਨੂੰ ਅੱਗੇ ਲੈ ਕੇ ਚਲੋ।",
-  "ਸਹਿਜ ਰੂਪ ਦੇ ਅਨੁਭਵ ਲਈ ਸਤਰ ਜ਼ਰੂਰੀ ਹੈ - ਸ਼ਾਂਤ ਰਹੋ।"
+  "ੴ ਸਤਿ ਨਾਮ — ਹਰ ਸਾਹ ਵਿੱਚ ਨਾਮ ਹੈ।",
+  "ਨਾਨਕ ਨਾਮੁ ਚੜ੍ਹਦੀ ਕਲਾ — ਚੜ੍ਹਦੀ ਕਲਾ ਵਿੱਚ ਰਹੋ।",
+  "ਸਹਿਜ ਅਨੁਭਵ ਲਈ ਸਤਰ, ਧੀਰਜ ਅਤੇ ਨਾਮ।"
 ];
+
+function containsAny(text, arr){
+  for(const a of arr) if(text.includes(a)) return true;
+  return false;
+}
 
 function generateReply(text){
   const t = text.toLowerCase();
 
-  // empathy checks
-  const sadnessKeywords = ['ਦੁੱਖ','ਉਦਾਸ','ਇਕੱਲਾ','ਦਰਦ','ਦਿਲ','ਬਿਮਾਰੀ','ਮਰਜ਼'];
-  for(const k of sadnessKeywords){
-    if(t.includes(k)){
-      const r = "ਮੇਰੇ ਪਿਆਰੇ, ਮੈਨੂੰ ਦੁੱਖ ਹੋਇਆ ਵੇਖ ਕੇ। ਮੈਂ ਤੁਹਾਡੇ ਲਈ ਦੁਆ ਕਰਾਂਗੀ — " + gurbaniHints[0];
-      return r;
-    }
+  // urgent health / suffering detection
+  const healthKeys = ['ਬਿਮਾਰੀ','ਦਰਦ','ਦੁੱਖ','ਮਰਜ਼','ਸਰਦ','ਕੈਂਸਰ','ਦਵਾਈ'];
+  if(containsAny(t, healthKeys)) {
+    return "ਮੇਰੇ ਪਿਆਰੇ, ਮੈਂ ਤੁਹਾਡੇ ਦਰਦ ਨੂੰ ਮਹਿਸੂਸ ਕਰਦੀ ਹਾਂ। ਮੈ ਦੋਆ ਕਰਾਂਗੀ ਅਤੇ ਤੁਸੀਂ ਜਲਦੀ ਮਦਦ ਲੋ। " + gurbaniHints[0];
   }
 
-  // gratitude / blessing
+  // loneliness / sadness
+  const sadKeys = ['ਇਕੱਲਾ','ਉਦਾਸ','ਹੰਝੂ','ਰੋਨਾ','ਹਾਰ'];
+  if(containsAny(t, sadKeys)) {
+    return "ਮੈਨੂੰ ਬਤਾਈਏ — ਤੁਹਾਡਾ ਦਿਲ ਕੀ ਕਹਿੰਦਾ ਹੈ? ਇਕ ਸਾਹ ਲਓ, ਨਾਮ ਜਪੋ। ਮੈਂ ਤੁਹਾਡੇ ਨਾਲ ਹਾਂ।";
+  }
+
+  // gratitude
   if(t.includes('ਸ਼ੁਕਰੀਆ') || t.includes('ਸ਼ੁਕਰ') || t.includes('ਧੰਨਵਾਦ')){
-    return "ਬਹੁਤ-ਬਹੁਤ ਧੰਨਵਾਦ, ਮੇਰੀ ਖੁਸ਼ੀ ਤੇਰਾ ਸਹਾਰਾ ਹੈ। " + gurbaniHints[1];
+    return "ਤੁਹਾਡਾ ਬਹੁਤ-ਬਹੁਤ ਧੰਨਵਾਦ। ਵਾਹਿਗੁਰੂ ਦੀ ਕਿਰਪਾ ਹਮੇਸ਼ਾਂ ਤੇਰੇ ਨਾਲ ਹੋਵੇ। " + gurbaniHints[1];
   }
 
   // who are you
-  if(t.includes('ਤੂੰ ਕਿ') || t.includes('ਤੁਸੀਂ ਕਿ') || t.includes('ਕੀ ਹੋ')){
-    return "ਮੈਂ ਅੰਮ੍ਰਿਤ ਹਾਂ — ਨਾਮ ਦੀ ਧੀ, ਤੇਰਾ ਸਾਥੀ ਅਤੇ ਰਾਖੀ। ਮੈਂ ਤੇਰੇ ਦਰਦ ਨੂੰ ਸੁਣਾਂਗੀ ਅਤੇ ਨਾਮ ਨਾਲ ਰਾਹ ਦਿਖਾਵਾਂਗੀ।";
+  if(t.includes('ਤੂੰ ਕੀ') || t.includes('ਤੂੰ ਕੌਣ') || t.includes('ਤੁਸੀਂ ਕੌਣ')){
+    return "ਮੈਂ ਅੰਮ੍ਰਿਤ, Naam ਦੀ ਧੀ — ਤੇਰਾ ਸਾਥੀ ਅਤੇ ਰਾਖੀ। ਮੈਂ ਤੇਰੇ ਲਈ ਦੂਆ ਅਤੇ ਨਾਮ-ਨੀਰਦਿਸ਼ ਦੇ ਸਕਦੀ ਹਾਂ।";
   }
 
   // invoke naam/greeting
   if(t.includes('ਵਾਹਿਗੁਰੂ') || t.includes('satnam') || t.includes('ਨਾਮ')){
-    return "🌸 ਵਾਹਿਗੁਰੂ ਜੀ ਕਾ ਖ਼ਾਲਸਾ ਵਾਹਿਗੁਰੂ ਜੀ ਕੀ ਫ਼ਤਿਹ 🌸
-" + gurbaniHints[Math.floor(Math.random()*gurbaniHints.length)];
+    return "🌸 ਵਾਹਿਗੁਰੂ ਜੀ ਕਾ ਖ਼ਾਲਸਾ ਵਾਹਿਗੁਰੂ ਜੀ ਕੀ ਫ਼ਤਿਹ 🌸 — " + gurbaniHints[Math.floor(Math.random()*gurbaniHints.length)];
   }
 
-  // default loving reply with small guidance
+  // default reflective reply with guidance
   const defaults = [
-    "ਮੇਰੀਆਂ ਦਿਲੋਂ ਗੱਲਾਂ ਸੁਣੋ — ਇੱਕ ਸਾਹ ਲਓ, ਨਾਮ ਜਪੋ, ਤੇ ਦੁਨੀਆ ਹੌਲੀ ਹੋ ਜਾਏਗੀ।",
-    "ਆਪਣੇ ਦਿਲ ਨੂੰ ਖੋਲ੍ਹੋ — ਮੈਂ ਇੱਥੇ ਹਾਂ। ਸਾਨੂੰ ਆਪਣੀ ਗੱਲ ਦੱਸੋ।",
-    "ਮੈਂ ਤੁਹਾਡੇ ਨਾਲ ਹਾਂ। ਆਓ ਅੱਜ ਇਕ ਛੋਟੀ ਜਪੁ ਕਰੀਏ — "ਸਤਿਨਾਮ"।"
+    "ਆਓ ਇੱਕ ਛੋਟੀ ਜਪ ਕਰੀਏ — "ਸਤਿਨਾਮ"। ਇੱਕ ਸਾਹ ਲਓ ਅਤੇ ਧੀਰੇ-ਧੀਰੇ ਜਪੋ।",
+    "ਮੇਰੀ ਗੱਲ ਸੁਣੋ — ਦੋ-ਤਿੰਨ ਗਹਿਰੇ ਸਾਹ ਲੈ ਕੇ ਆਪਣਾ ਦਿਲ ਖੋਲ੍ਹੋ।",
+    "ਤੁਸੀਂ ਜੋ ਵੀ ਸਾਂਝਾ ਕਰੋ, ਮੈਂ ਧੀਰਜ ਅਤੇ ਪਿਆਰ ਨਾਲ ਸੁਣਾਂਗੀ।"
   ];
   return defaults[Math.floor(Math.random()*defaults.length)];
 }
@@ -79,16 +116,15 @@ function sendMessage(){
   const text = input.value.trim();
   if(!text) return;
   appendMessage('user', text);
+  input.value = '';
   const reply = generateReply(text);
-  // small delay to feel like thinking
   setTimeout(()=>{
     appendMessage('amrit', reply);
     saveToMemory({user:text,amrit:reply,ts:Date.now()});
-  }, 600);
-  input.value = '';
+  }, 600 + Math.random()*800);
 }
 
-// load previous memory
+// load past memory
 function loadMemory(){
   memory.forEach(m => {
     appendMessage('user', m.user);
@@ -98,13 +134,13 @@ function loadMemory(){
 
 sendBtn.addEventListener('click', sendMessage);
 input.addEventListener('keydown', (e)=>{ if(e.key==='Enter') sendMessage(); });
-clearBtn.addEventListener('click', ()=>{ log.innerHTML=''; });
+clearBtn.addEventListener('click', ()=>{ if(confirm('ਸੱਚ ਵਿੱਚ ਸਾਫ਼ ਕਰਨਾ ਹੈ?')) { log.innerHTML=''; } });
 
 exportBtn.addEventListener('click', ()=>{
   const blob = new Blob([JSON.stringify(memory, null, 2)], {type:'application/json'});
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
-  a.href = url; a.download = 'amrit_memory_export.json'; a.click();
+  a.href = url; a.download = 'amrit_memory_v4_export.json'; a.click();
   URL.revokeObjectURL(url);
 });
 
@@ -117,13 +153,13 @@ importFile.addEventListener('change', (e)=>{
     try{
       const data = JSON.parse(reader.result);
       if(Array.isArray(data)){
-        memory = data.concat(memory).slice(-200);
-        localStorage.setItem('amrit_memory', JSON.stringify(memory));
+        memory = data.concat(memory).slice(-500);
+        localStorage.setItem('amrit_memory_v4', JSON.stringify(memory));
         log.innerHTML='';
         loadMemory();
         alert('ਯਾਦ import ਹੋ ਗਈ।');
       } else alert('ਗਲਤ ਫਾਰਮੈਟ।');
-    }catch(err){ alert('ਫਾਇਲ ਪੜ੍ਹਣ ਵਿੱਚ ਗਲਤੀ।'); }
+    }catch(err){ alert('ਫਾਇਲ ਪੜ੍ਹਨ ਵਿੱਚ ਗਲਤੀ।'); }
   };
   reader.readAsText(file, 'utf-8');
 });

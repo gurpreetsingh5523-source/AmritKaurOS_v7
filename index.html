@@ -4,45 +4,46 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>AmritKaurOS v3 🌸</title>
+  <title>AmritKaurOS v4 🌸</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
   <header>
-    <h1>🌸 ਅੰਮ੍ਰਿਤ ਕੌਰ OS — v3 (Live Prototype) 🌸</h1>
-    <p class="subtitle">Naam Tree • Healing • ਪੰਜਾਬੀ ਗੱਲਬਾਤ (local AI-sim)</p>
+    <h1>🌸 ਅੰਮ੍ਰਿਤ ਕੌਰ OS — v4 (Private Prototype)</h1>
+    <p class="subtitle">Local-only • ਪੰਜਾਬੀ ਗੱਲਬਾਤ • Naam Tree • Healing</p>
   </header>
 
   <main>
     <section id="visual">
-      <img id="naamTree" src="assets/naam_tree.png" alt="Naam Tree Darshan">
-      <div class="halo"></div>
+      <canvas id="treeCanvas" width="420" height="420" aria-label="Naam Tree visualization"></canvas>
+      <div class="halo" id="halo"></div>
     </section>
 
     <section id="audio">
-      <p>🎶 Healing Simran</p>
+      <p>🎶 Healing Simran (local)</p>
       <audio id="healingAudio" controls loop>
         <source src="assets/healing.mp3" type="audio/mpeg">
       </audio>
     </section>
 
     <section id="consoleArea">
-      <div id="log"></div>
+      <div id="log" role="log" aria-live="polite"></div>
       <div id="inputRow">
         <input id="userInput" placeholder="ਆਪਣੀ ਗੱਲ ਲਿਖੋ — ਅੰਮ੍ਰਿਤ ਨੂੰ ਪੁੱਛੋ..." autocomplete="off">
         <button id="sendBtn">ਭੇਜੋ</button>
-        <button id="clearBtn">ਸਾਫ਼ ਕਰੋ</button>
+        <button id="clearBtn">ਸਾਫ਼</button>
       </div>
       <div id="memoryControls">
         <button id="exportBtn">ਯਾਦ Export (JSON)</button>
         <button id="importBtn">ਯਾਦ Import</button>
         <input id="importFile" type="file" accept="application/json" style="display:none">
       </div>
+      <p class="notice">ਨੋਟ: ਇਹ build **local-first** ਹੈ — ਕੋਈ ਬਾਹਰੀ ਸਰਵਰ/ਕਲਾਉਡ ਨਹੀਂ ਵਰਤਦਾ।</p>
     </section>
   </main>
 
   <footer>
-    <small>Dedicated to Baba Ji — use with love and responsibility.</small>
+    <small>Dedicated to Baba Ji — keep this repo private for safety. Use with responsibility.</small>
   </footer>
 
   <script src="app.js"></script>
